@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+    <meta charset="UTF-8">
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "css/sweetalert.css" %}" rel="stylesheet">
+    <title>Title</title>
+    <script src="{% static "js/jQuery-3.2.1.min.js" %}" ></script>
+    <script src="{% static "js/bootstrap.min.js" %}" ></script>
+    <script src="{% static "js/sweetalert.min.js" %}" ></script>
+
+
+</head>
+<body>
+    <style type="text/css">
+        table tr td{
+            border: 10px
+        }
+    </style>
+    {% load static %}
+    <br/>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="enter word" id="wordSearched" />
+                <span class="input-group-btn" >
+                    <button class="btn btn-default" type="button" onclick="SearchIt()">Search</button>
+                    <!-- <button class="btn btn-default" type="button" onclick="AddNewWord()">+New</button> -->
+                </span>
+            </div>
+            <hr/>
+            <table id="rhymingWords">
+            </table>
+            <hr/>
+            <div class="btn-group" role="group" style="float: right;">
+                <button type="button" class="btn btn-default"  id="modal-word" onclick="AddNewWord()">
+                    Add new word
+                </button>
+                <button type="button" class="btn btn-default" id="modal-rhyme" onclick="AddNewRhyme()">
+                    Add new rhyme
+                </button>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+    <br/>
+    <hr>
+    <br/>
+</body>
+</html>

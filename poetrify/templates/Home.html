@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+    <title>Home - Poetrify</title>
+    {% load static %}
+    <meta charset="UTF-8">
+    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "css/sweetalert.css" %}" rel="stylesheet">
+    <title>Title</title>
+    <script src="{% static "js/jQuery-3.2.1.min.js" %}" ></script>
+    <script src="{% static "js/bootstrap.min.js" %}" ></script>
+    <script src="{% static "js/sweetalert.min.js" %}" ></script>
+
+</head>
+<body>
+    {% load static %}
+    <div class="row" style="background-color: black;">
+        <h4 style="color: white; padding: 10px 10px 10px 50px;"><a href="/poetrify/home">POETRIFY</a></h4>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="enter word" id="wordSearched" />
+                <span class="input-group-btn" >
+                    <button class="btn btn-default" type="button" onclick="SearchIt()">Search</button>
+                    <button class="btn btn-default" type="button" onclick="location.href = '/poetrify/requests'">
+                        <span class="glyphicon glyphicon-list-alt"></span>
+                        <span class="badge" id="noOfRequests"></span>
+                    </button>
+                </span>
+            </div>
+            <br>
+            <button class="btn btn-default" type="button" style="float: right;" onclick="location.href = '/poetrify/seeAll'">See All</button>
+            <br/>
+            <hr>
+            <br/>
+            <table id="rhymingWords">
+            </table>
+            <br/>
+            <hr>
+            <br/>
+            <div class="btn-group" role="group" style="float: right;">
+                <button type="button" class="btn btn-default"  id="modal-word" onclick="AddNewWord()">
+                    Add new word
+                </button>
+                <button type="button" class="btn btn-default" id="modal-rhyme" onclick="AddNewRhyme()">
+                    Add new rhyme
+                </button>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+
+    <script type="text/javascript">
+        $("document").ready(function GetTotRequests(){
+            $.ajax({
+                url:"/poetrify/getNoOfRequests",
+                type: 'GET',
+                datatype: 'JSON',
+                success:function(data){
+                    console.log(data);
+                    document.getElementById("noOfRequests").innerHTML=data;
+                },
+                error:function(data){
+                    alert("-1");
+                }
+            })
+        });
+
+        function ShowRhymingWord(word){
+            var table = document.getElementById('rhymingWords');
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            var cell1 = row.insertCell(0);
+            cell1.innerHTML = word;
+        }
+
+        function SearchIt(){
+            var table = document.getElementById('rhymingWords');
+            table.innerHTML="";
+            var w = $("#wordSearched").val();
+            $.ajax({
+                url:"/poetrify/getRhymes",
+                type: 'GET',
+                datatype: 'JSON',
+                data: { word: w },
+                success: function (data) {
+                    console.log(data);
+                    if(data!="")
+                    {
+                        var json = eval("(" + data + ")");
+                        console.log(json, typeof(json));
+                        var l = json.length;
+                        for(var i=0; i<l; i++)
+                        {
+                            ShowRhymingWord(json[i]);
+                        }
+                    }
+                    else{
+                        ShowRhymingWord("<span class='alert alert-danger'>Sorry!! No rhymes found</span>");
+                    }
+                },
+                error: function () {
+                    alert("Some Error");
+                }
+            })
+        }
+
+        function AddNewWord(){
+            var words="";
+            swal({
+                title:"enter word(s)",
+                text:"",
+                type:"input",
+                showCancelButton:true,
+                closeOnConfirm:false,
+                animation: "slide-from-top",
+                inputPlaceholde: "New Words",
+            },
+            function(inputValue){
+                if(inputValue==false){
+                    return false;
+                }
+                if(inputValue=='' || inputValue==null){
+                    swal.showInputError("No input");
+                    return false;
+                }
+                $.ajax({
+                    url: "/poetrify/addNewWords",
+                    type: "GET",
+                    datatype: "JSON",
+                    data:{words: inputValue},
+                    success:function(data){
+                        if(data==1){
+                            swal({
+                                title: "Thanks for input!",
+                                text: "",
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonText: "OK",
+                                closeOnConfirm: false,
+                            },function(){
+                                window.location.reload();
+                            })
+                        }
+                        else{
+                            swal("Sorry! Your input seems wrong", "Read documents for further details", "error");
+                            GetTotRequests();
+                        }
+                    }
+                })
+            });
+        }
+
+        function AddNewRhyme(){
+            var words="";
+            swal({
+                title:"enter rhyme(s)",
+                text:"",
+                type:"input",
+                showCancelButton:true,
+                closeOnConfirm:false,
+                animation: "slide-from-top",
+                inputPlaceholde: "New Rhymes",
+            },
+            function(inputValue){
+                if(inputValue==false){
+                    return false;
+                }
+                if(inputValue=='' || inputValue==null){
+                    swal.showInputError("No input");
+                    return false;
+                }
+                $.ajax({
+                    url: "/poetrify/addNewRhymes",
+                    type: "GET",
+                    datatype: "JSON",
+                    data:{words: inputValue},
+                    success:function(data){
+                        if(data==1){
+                            swal({
+                                title: "Thanks for input!",
+                                text: "",
+                                type: "success",
+                                showCancelButton: false,
+                                confirmButtonText: "OK",
+                                closeOnConfirm: false,
+                            },function(){
+                                window.location.reload();
+                            })
+                        }
+                        else{
+                            swal("Sorry! Your input seems wrong", "Read documents for further details", "error");
+                        }
+                    }
+                })
+            });
+        }
+    </script>
+</body>
+</html>
